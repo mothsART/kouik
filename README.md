@@ -2,13 +2,14 @@
 
 ## Introduction
 
-# 1
+## Examples
 
+1. 
 ```sh
 karcher browser
 ```
 
-give list (if firefox and chromium are open) :
+return a list of softwares (if firefox and chromium are open) :
 
 ```sh
 1) firefox
@@ -17,7 +18,7 @@ a) all
 q) quit (kill nothing)
 ```
 
-# 2
+2.
 
 ```sh
 karcher brwoser
