@@ -24,18 +24,22 @@ fn prompt(title: &str, kill_list: &Vec<String>) {
     if kill_list.len() > 1 {
         println!("a) all");
     }
+    println!("q) quit");
 
     let mut input = String::new();
     let read_input = stdin().read_line(&mut input);
     match read_input {
         Err(_e) => {
-            prompt("Wrong input \"a\". retry :", kill_list)
+            prompt("Wrong input \"a\". Retry :", kill_list)
         },
         Ok(_r) => {
             match input.trim() {
+                "q" => {
+                    exit(1);
+                },
                 "a" => {
                     if kill_list.len() == 1 {
-                        prompt("Wrong input \"a\". retry :", kill_list)
+                        prompt("Wrong input \"a\". Retry :", kill_list)
                     }
                     let concat_list = kill_list.join(" ");
                     let killall_cmd = Command::new("killall")
@@ -77,13 +81,13 @@ fn prompt(title: &str, kill_list: &Vec<String>) {
                         }
                         Ok(input) => {
                             prompt(
-                                &format!("Wrong input \"{}\". retry :", input),
+                                &format!("Wrong input \"{}\". Retry :", input),
                                 kill_list
                             )
                         },
                         Err(_e) => {
                             prompt(
-                                &format!("Wrong input \"{}\". retry :", input),
+                                &format!("Wrong input \"{}\". Retry :", input),
                                 kill_list
                             )
                         }
@@ -141,7 +145,12 @@ fn main() {
                     exit(1);
                 }
 
-                prompt("Choose applications to kill :", &kill_list);
+                let mut title = "Choose application to kill :";
+                if kill_list.len() > 1 {
+                    title = "Choose applications to kill :";
+                }
+
+                prompt(title, &kill_list);
             }
         }
     }
