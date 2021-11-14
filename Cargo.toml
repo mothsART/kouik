@@ -1,5 +1,5 @@
 [package]
-name = "karcher"
+name = "kouik"
 version = "0.1.0"
 authors = ["Ferry Jérémie <ferryjeremie@free.fr>"]
 edition = "2018"
@@ -13,4 +13,4 @@ dotenv = "0.15.0"
 serde = "1.0"
 
 [target.'cfg(target_os = "linux")'.dependencies]
-procfs        = "0.11.0"
+procfs = "0.11.0"

@@ -3,6 +3,6 @@ table! {
         id -> Integer,
         keyword -> Text,
         name -> Text,
-        locale -> Text,
+        locale -> Nullable<Text>,
     }
 }

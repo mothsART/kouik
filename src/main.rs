@@ -20,7 +20,7 @@ pub mod models;
 use crate::models::Program;
 
 const VERSION: &'static str = "0.1.0";
-const APP_NAME: &'static str = "Karcher";
+const APP_NAME: &'static str = "Kouik";
 
 fn establish_connection() -> SqliteConnection {
     dotenv().ok();
@@ -31,7 +31,7 @@ fn establish_connection() -> SqliteConnection {
 
 fn build_cli() -> App<'static, 'static> {
     App::new(APP_NAME)
-    .bin_name("karcher")
+    .bin_name("kouik")
     .version(VERSION)
     .author("Ferry Jérémie ferryjeremie@free.fr")
     .about("kill program")
@@ -128,7 +128,7 @@ fn main() {
         let connection = establish_connection();
 
         let results = programs.filter(keyword.eq(keyword))
-            .load::<Program>(&connection);
+                              .load::<Program>(&connection);
 
         match results {
             Err(_e) => {

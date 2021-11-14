@@ -1,4 +1,4 @@
-# Karcher
+# Kouik
 
 ## Introduction
 
@@ -6,7 +6,7 @@
 
 1. 
 ```sh
-karcher browser
+kouik browser
 ```
 
 return a list of softwares (if firefox and chromium are open) :
@@ -21,13 +21,13 @@ q) quit (kill nothing)
 2.
 
 ```sh
-karcher brwoser
+kouik brwoser
 ```
 
 replace by
 
 ```sh
-karcher browser
+kouik browser
 ```
 
 Levenstein distance : https://www.sqlite.org/spellfix1.html
