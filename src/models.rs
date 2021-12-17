@@ -1,4 +1,4 @@
-#[derive(Queryable)]
+#[derive(Queryable, Debug)]
 pub struct Program {
     pub id: i32,
     pub keyword: String,

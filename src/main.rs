@@ -127,7 +127,11 @@ fn main() {
     if let Some(program) = matches.value_of("program") {
         let connection = establish_connection();
 
-        let results = programs.filter(keyword.eq(keyword))
+        let _locale = env::var("LANG").unwrap();
+        let lang = _locale.get(0..5);
+        
+        let results = programs.filter(keyword.eq(program))
+                              .filter(locale.eq(lang).or(locale.is_null()))
                               .load::<Program>(&connection);
 
         match results {
