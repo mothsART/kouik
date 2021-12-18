@@ -8,16 +8,19 @@ use std::process::{Command, exit};
 use std::io::stdin;
 
 use clap::{App, Arg};
-use diesel::prelude::*;
 use crate::diesel::Connection;
 use diesel::sqlite::SqliteConnection;
 use dotenv::dotenv;
+
+/*
+use diesel::prelude::*;
+use crate::models::Program;
+*/
 
 pub mod schema;
 pub mod models;
 
 
-use crate::models::Program;
 
 const VERSION: &'static str = "0.1.0";
 const APP_NAME: &'static str = "Kouik";
@@ -129,12 +132,31 @@ fn main() {
 
         let _locale = env::var("LANG").unwrap();
         let lang = _locale.get(0..5);
-        
+
+        let select = format!(
+            "SELECT name FROM programs WHERE (locale = \"{}\" OR locale IS NULL) AND editdist3(keyword, \"{}\") < 200;",
+            lang.unwrap(),
+            program
+        );
+        println!("{}", select);
+        let command = Command::new("sqlite3")
+                            .arg("karcher.db")
+                            .arg(".load ./spellfix")
+                            .arg(select)
+                            .output()
+                            .unwrap()
+                            .stdout;
+        let stdout = String::from_utf8(command);
+        /*
+         * Diesel doesn't support SQlite extension :
+         * https://github.com/diesel-rs/diesel/discussions/2989
+         * => https://github.com/diesel-rs/diesel/pull/2180
         let results = programs.filter(keyword.eq(program))
                               .filter(locale.eq(lang).or(locale.is_null()))
                               .load::<Program>(&connection);
+        */
 
-        match results {
+        match stdout {
             Err(_e) => {
                 eprintln!(
                     "Nothing was found matching \"{}\". {} can't kill processes.",
@@ -142,7 +164,9 @@ fn main() {
                 );
                 exit(1);
             },
-            Ok(results) => {
+            Ok(stdout) => {
+                let results: Vec<&str> = stdout.lines().collect();
+                println!("{:?}", results);
                 if results.len() == 0 {
                     eprintln!(
                         "Nothing was found matching \"{}\". {} can't kill processes.",
@@ -160,12 +184,12 @@ fn main() {
                     },
                     Ok(processes) => {
                         let mut kill_list =  Vec::new();
-                        for p in &results {
+                        for p in results {
                             for prc in &processes {
                                 if kill_list.contains(&prc.stat.comm) {
                                     continue;
                                 }
-                                if prc.stat.comm.contains(&p.name) {
+                                if prc.stat.comm.contains(&p) {
                                     kill_list.push(prc.stat.comm.to_string());
                                 }
                                 if kill_list.len() > 9 {
