@@ -23,11 +23,11 @@ fn main() {
             Ok(option) => {
                 match option {
                     Some(liste_pid) => {
-                        println!("{:?}",liste_pid);
+                        // println!("{:?}",liste_pid); // debug
                         /* kill them */
                         Command::new("kill")
                             .arg("-9")
-                            .arg(liste_pid[0].to_string())
+                            .arg(liste_pid.join(" "))
                             .output()
                             .expect("Failed to execute command");
                     },

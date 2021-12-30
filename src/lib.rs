@@ -2,17 +2,17 @@ use std::option::Option;
 use std::fs;
 use std::path::Path;
 
-pub fn find_program(progname: &str) -> Result<Option<Vec<i32>>,std::io::Error> {
+pub fn find_program(progname: &str) -> Result<Option<Vec<String>>,std::io::Error> {
 	let mut list_pid = Vec::new();
     for entry in fs::read_dir(Path::new("/proc"))? {
             let entry = entry?;
             let path = entry.path().join("exe");
             if let Ok(filename) = get_basename_symlink(&path) {
-            	println!("{}", filename);
+            	// println!("{}", filename); // debug
             	if filename == progname.to_string() {
             		if let Some(pathtmp) = entry.path().as_path().to_str() {
             			if let Some(index) = pathtmp.to_string().rfind("/") {
-            				let pid : i32 = pathtmp[index+1..].parse::<i32>().unwrap();
+            				let pid : String = pathtmp[index+1..].to_string();
             				list_pid.push(pid);
             			}
             		}
