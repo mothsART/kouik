@@ -12,7 +12,7 @@ fn build_cli() -> App<'static, 'static> {
     .version(VERSION)
     .author("Ferry Jérémie ferryjeremie@free.fr")
     .about("kill program")
-    .arg(Arg::with_name("program").required(false).index(1).help("le nom du programme à tuer"))    
+    .arg(Arg::with_name("program").required(true).index(1).help("le nom du programme à tuer"))    
 }
 
 fn main() {
@@ -42,7 +42,5 @@ fn main() {
             /* if there are one programme say Yes or No*/
             /* if there are several programme, choose */
         /* if no programme find, then send error message */
-    } else {
-        println!("show kouik help");
     }
 }
