@@ -23,7 +23,7 @@ q) quit (kill nothing)
 ```sh
 kouik fiferox
 ```
-warm
+warning is showed
 ```sh
 kouik : no program with the name "fiferox".
 did you mean 'firefox' ?
