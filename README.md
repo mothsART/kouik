@@ -1,5 +1,7 @@
 # Kouik
 
+> **kouik** It is an french onomatopoeia uttered by a person when he or she wants to signify death; the onomatopoeia is accompanied by a hand gesture - fist clenched, thumb out - imitating a knife slitting (process guillotine).
+
 ## Introduction
 
 ## Examples
@@ -17,8 +19,16 @@ return a list of softwares (if firefox and chromium are open) :
 a) all
 q) quit (kill nothing)
 ```
-
 2.
+```sh
+kouik fiferox
+```
+warm
+```sh
+kouik : no program with the name "fiferox".
+did you mean 'firefox' ?
+```
+3.
 
 ```sh
 kouik brwoser
@@ -29,5 +39,3 @@ replace by
 ```sh
 kouik browser
 ```
-
-Levenstein distance : https://www.sqlite.org/spellfix1.html
