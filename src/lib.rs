@@ -1,38 +1,35 @@
-use std::option::Option;
 use std::fs;
 use std::path::Path;
+use std::io::Error;
 
-pub fn find_program(progname: &str) -> Result<Option<Vec<String>>,std::io::Error> {
-	let mut list_pid = Vec::new();
-    for entry in fs::read_dir(Path::new("/proc"))? {
-            let entry = entry?;
-            let path = entry.path().join("exe");
-            if let Ok(filename) = get_basename_symlink(&path) {
-            	// println!("{}", filename); // debug
-            	if filename == progname.to_string() {
-            		if let Some(pathtmp) = entry.path().as_path().to_str() {
-            			if let Some(index) = pathtmp.to_string().rfind("/") {
-            				let pid : String = pathtmp[index+1..].to_string();
-            				list_pid.push(pid);
-            			}
-            		}
-            	}
-            }
-    }
-    if list_pid.is_empty() {
-    	Ok(None)
-    } else {
-    	Ok(Some(list_pid))
-    }
+pub struct Proc {
+	pub pid: i32,
+	pub names: Vec<String>,
 }
-/*
-pub fn find_program() {
-	/* for every directory in /proc */
-	get_procs();
-		/* get basename of symlink pid/exe */
-			/* if it's same as program name */
-				/* add in a list */
-}*/
+
+pub fn get_procs() -> Result<Vec<Proc>,Error> {
+	let mut processus = Vec::<Proc>::new(); 
+	for entry in fs::read_dir(Path::new("/proc"))? {
+		let entry = entry?;
+		let path = entry.path().join("exe");
+		if let Ok(filename) = get_basename_symlink(&path) {
+			if let Some(pathtmp) = entry.path().as_path().to_str() {
+				if let Some(index) = pathtmp.to_string().rfind("/") {
+					let pid: Result<i32,_> = pathtmp[index+1..].parse();
+					match pid {
+						Ok(pid_ok) => {
+							let vec_s = vec![filename];
+							let process = Proc {pid: pid_ok, names: vec_s};
+							processus.push(process);
+						},
+						Err(_) => {},
+					}
+				}
+			}
+		}
+	}
+	Ok(processus)
+}
 
 pub fn get_basename_symlink(entry: &Path) -> Result<String,&'static str> {
 	if let Ok(path) = fs::read_link(entry) {
