@@ -1,10 +1,9 @@
 use clap::{App, Arg};
-use nix::unistd::Pid;
-use nix::sys::signal::{kill,Signal};
 
 pub mod lib;
+pub mod kill;
 
-const VERSION: &'static str = "0.2.2";
+const VERSION: &'static str = "0.2.3";
 const APP_NAME: &'static str = "Kouik";
 
 fn build_cli() -> App<'static, 'static> {
@@ -20,28 +19,24 @@ fn build_cli() -> App<'static, 'static> {
 fn main() {
     let matches = build_cli().get_matches();
     if let Some(program_name) = matches.value_of("program") {
-        /* find exact programme */
+        
         let procs : Result<Vec<lib::Proc>,std::io::Error> = lib::get_procs();
+        
         match procs {
             Ok(liste_procs) => {
-                for process in liste_procs {
-                    for name in process.names {
-                        if name == program_name.to_string() {
-                            match kill(Pid::from_raw(process.pid),Signal::SIGTERM) {
-                                Ok(_) => {},
-                                Err(e) => println!("kill send : {:?}",e),
-                            }
-                        }
-                    }
+                /* find exact programme */
+                let nb_killed : u32 = kill::kill_proc_by_name(program_name.to_string(),liste_procs);
+                if nb_killed == 0 {
+                    println!("Aucun processus ne correspond au nom {:?}", program_name);
+                    /* calcul leveinstein distance pour tous */
+                        /* if there are one programme say Yes or No*/
+                        /* if there are several programme, choose */
+                        /* if no programme find, then send error message */
                 }
             },
             Err(_) => {
                 println!("flûte une erreur s'est produite !");
             },
         }
-        /* find near programme */
-                    /* if there are one programme say Yes or No*/
-            /* if there are several programme, choose */
-        /* if no programme find, then send error message */
     }
 }

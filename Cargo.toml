@@ -1,6 +1,6 @@
 [package]
 name = "kouik"
-version = "0.1.0"
+version = "0.2.3"
 authors = ["Ferry Jérémie <ferryjeremie@free.fr>"]
 edition = "2018"
 
