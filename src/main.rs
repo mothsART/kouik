@@ -27,12 +27,23 @@ fn main() {
                 /* find exact programme */
                 let nb_killed : u32 = kill::kill_proc_by_name(program_name,&liste_procs);
                 if nb_killed == 0 {
-                    println!("Aucun processus ne correspond au nom {:?}", program_name);
-                    /* calcul leveinstein distance pour tous */
-                    let proc_with_levensthein_distance = lib::obtain_levenstein_distance(program_name,liste_procs);
                     
+                    /* calcul leveinstein distance pour tous */
+                    let proc_with_levensthein_distance = lib::obtain_levensthein_distance(program_name,liste_procs);
+
+                    let value_max_to_be_close : usize = program_name.chars().count()/2 - 1;
+
+                    if value_max_to_be_close <= 0 {
+                        println!("Aucun processus ne correspond au nom {:?}", program_name);
+                        return;
+                    }
+
+                    println!("La valeur maximale est {}", value_max_to_be_close);
+
                     for processus in proc_with_levensthein_distance {
-                        println!("voilà {:?}", processus.levensthein_distance);
+                        if processus.levensthein_distance <= value_max_to_be_close {
+                            println!("Trouvé le programme {:?} car levensthein_distance est de {}", processus.proc.names, processus.levensthein_distance);
+                        } 
                     }
                         /* if there are one programme say Yes or No*/
                         /* if there are several programme, choose */

@@ -49,7 +49,7 @@ pub struct LevensteinProc {
 	pub levensthein_distance :usize,
 }
 
-pub fn obtain_levenstein_distance(progname: &str, liste_procs: Vec<Proc>) -> Vec<LevensteinProc> {
+pub fn obtain_levensthein_distance(progname: &str, liste_procs: Vec<Proc>) -> Vec<LevensteinProc> {
 	let mut leven_vec_of_proc = Vec::<LevensteinProc>::new();
 
 	for processus in liste_procs {
@@ -58,7 +58,6 @@ pub fn obtain_levenstein_distance(progname: &str, liste_procs: Vec<Proc>) -> Vec
 
 		for name in &processus.names {
 			let dist = levenshtein(name,progname);
-			println!(" la distance obtenue est : {:?}", dist);
 			if dist < min {
 				min = dist;
 			}
