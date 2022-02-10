@@ -25,10 +25,15 @@ fn main() {
         match procs {
             Ok(liste_procs) => {
                 /* find exact programme */
-                let nb_killed : u32 = kill::kill_proc_by_name(program_name.to_string(),liste_procs);
+                let nb_killed : u32 = kill::kill_proc_by_name(program_name,&liste_procs);
                 if nb_killed == 0 {
                     println!("Aucun processus ne correspond au nom {:?}", program_name);
                     /* calcul leveinstein distance pour tous */
+                    let proc_with_levensthein_distance = lib::obtain_levenstein_distance(program_name,liste_procs);
+                    
+                    for processus in proc_with_levensthein_distance {
+                        println!("voilà {:?}", processus.levensthein_distance);
+                    }
                         /* if there are one programme say Yes or No*/
                         /* if there are several programme, choose */
                         /* if no programme find, then send error message */
