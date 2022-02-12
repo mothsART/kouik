@@ -1,5 +1,5 @@
 use clap::{App, Arg};
-use std::io::stdin;
+use std::io::{stdin,stdout,Write};
 
 pub mod lib;
 pub mod kill;
@@ -72,7 +72,8 @@ fn interact_with_user_ask_if_it_must_kill(progname: &str, processus_similar: &Ve
         /* if there are one programme say Yes or No*/
         1 => {
             println!("Un processus au nom similaire à été trouvé pour \"{}\"", progname);
-            println!("Voulez vous tuer le processus ? (o/N)");
+            print!("Voulez vous tuer le processus ? (o/N)\t");
+            stdout().flush().expect("Le flush de stdout à échoué");
             let mut s = String::new();
             stdin().read_line(&mut s).expect("Did not enter a correct string");
             if s == "O\n" || s == "o\n" {
