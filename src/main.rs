@@ -39,13 +39,11 @@ fn main() {
                         return;
                     }
 
-                    println!("La valeur maximale est {}", value_max_to_be_close);
-
                     let mut processus_similar = Vec::<lib::Proc>::new();
 
                     for processus in proc_with_levensthein_distance {
                         if processus.levensthein_distance <= value_max_to_be_close {
-                            println!("Trouvé le programme {:?} car levensthein_distance est de {}", processus.proc.names, processus.levensthein_distance);
+                            // println!("Trouvé le programme {:?} car levensthein_distance est de {}", processus.proc.names, processus.levensthein_distance);
                             processus_similar.push(processus.proc);
                         } 
                     }
@@ -72,7 +70,7 @@ fn interact_with_user_ask_if_it_must_kill(progname: &str, processus_similar: &Ve
         /* if there are one programme say Yes or No*/
         1 => {
             println!("Un processus au nom similaire à été trouvé pour \"{}\"", progname);
-            print!("Voulez vous tuer le processus ? (o/N)\t");
+            print!("Voulez vous tuer le processus {:?} ? (o/N)\t", processus_similar.get(0).unwrap().names);
             stdout().flush().expect("Le flush de stdout à échoué");
             let mut s = String::new();
             stdin().read_line(&mut s).expect("Did not enter a correct string");
