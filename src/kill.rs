@@ -16,3 +16,11 @@ pub fn kill_proc_by_name(progname: &str, liste_procs: &Vec<Proc>) -> u32 {
     }
     compteur
 }
+
+pub fn kill_proc(processus: &Proc) -> Option<String> {
+    let result_of_kill : nix::Result<()> = kill(Pid::from_raw(processus.pid),Signal::SIGTERM);
+    if let Err(error) = result_of_kill {
+        return Some(error.to_string());
+    }
+    return None;
+}

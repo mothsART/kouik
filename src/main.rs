@@ -52,13 +52,15 @@ fn main() {
 
                     if let Some(accepted_index) = accept_choice {
                         if let Some(procs) = processus_similar.get(accepted_index) {
-                            println!("et tada ! {:?}", procs.names);
+                            if let Some(error_description) = kill::kill_proc(procs) {
+                                eprintln!("Une erreur s'est produite  : {}", error_description);
+                            }
                         }
                     }
                 }
             },
             Err(_) => {
-                println!("flûte une erreur s'est produite !");
+                eprintln!("flûte une erreur s'est produite !");
             },
         }
     }
