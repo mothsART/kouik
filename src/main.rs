@@ -99,9 +99,11 @@ fn interact_with_user_ask_if_it_must_kill(progname: &str, processus_similar: &Ve
             println!("Aucun processus trouvé pour le nom \"{}\"", progname);
             return None;
         }
-        /* if there are several programme, choose */
+        /* if there are several programme, ask for user correction or choose ??? 
+         * Est-ce qu'il doit se reformuler ou alors il choisi dans la liste ???
+         */
         _ => {
-            println!("Plusieurs processus au nom similaire ont étés trouvés pour \"{}\"", progname);
+            println!("Auriez-vous voulu dire \"{}\" ?", progname);
             return None; // a implémenter
         }
     }
