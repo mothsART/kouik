@@ -4,7 +4,7 @@ use std::io::{stdin,stdout,Write};
 pub mod lib;
 pub mod kill;
 
-const VERSION: &'static str = "0.2.3";
+const VERSION: &'static str = "0.2.4";
 const APP_NAME: &'static str = "Kouik";
 
 fn build_cli() -> App<'static, 'static> {
@@ -26,7 +26,15 @@ fn main() {
         match procs {
             Ok(liste_procs) => {
                 /* find exact programme */
-                let nb_killed : u32 = kill::kill_proc_by_name(program_name,&liste_procs);
+                let res_nb_killed_or_trace : Result<u32,String> = kill::kill_proc_by_name(program_name,&liste_procs);
+
+                if let Err(error_trace) = res_nb_killed_or_trace {
+                    eprintln!("{}",error_trace);
+                    return;
+                }
+
+                let nb_killed = res_nb_killed_or_trace.unwrap();
+
                 if nb_killed == 0 {
                     
                     /* calcul leveinstein distance pour tous */
