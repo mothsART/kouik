@@ -18,7 +18,9 @@ fn build_cli() -> App<'static, 'static> {
 }
 
 fn main() {
+
     let matches = build_cli().get_matches();
+
     if let Some(program_name) = matches.value_of("program") {
         
         let procs : Result<Vec<lib::Proc>,std::io::Error> = lib::get_procs();
@@ -37,11 +39,15 @@ fn main() {
 
                 if nb_killed == 0 {
                     
-                    /* calcul leveinstein distance pour tous */
+                    // calcul leveinstein distance pour tous
                     let proc_with_levensthein_distance = lib::obtain_levensthein_distance(program_name,liste_procs);
 
                     let value_max_to_be_close : usize = program_name.chars().count()/2 - 1;
 
+                    /* Si la valeur est en dessous ou égale à zero ça signifirai que
+                     * le nom est considéré proche s'il correspond parfaitement (distance levensthein == 0)
+                     * et si nous sommes là c'est qu'il n'y en avait aucun qui correspondait parfaitement
+                     */
                     if value_max_to_be_close <= 0 {
                         println!("Aucun processus ne correspond au nom {:?}", program_name);
                         return;
@@ -51,7 +57,6 @@ fn main() {
 
                     for processus in proc_with_levensthein_distance {
                         if processus.levensthein_distance <= value_max_to_be_close {
-                            // println!("Trouvé le programme {:?} car levensthein_distance est de {}", processus.proc.names, processus.levensthein_distance);
                             processus_similar.push(processus.proc);
                         } 
                     }
@@ -77,7 +82,7 @@ fn main() {
 fn interact_with_user_ask_if_it_must_kill(progname: &str, processus_similar: &Vec<lib::Proc>) -> Option<usize> {
 
     match processus_similar.len() {
-        /* if there are one programme say Yes or No*/
+        /* if there are one programme say Yes or No */
         1 => {
             println!("Un processus au nom similaire à été trouvé pour \"{}\"", progname);
             print!("Voulez vous tuer le processus {:?} ? (o/N)\t", processus_similar.get(0).unwrap().names);

@@ -10,14 +10,22 @@ pub struct Proc {
 }
 
 pub fn get_procs() -> Result<Vec<Proc>,Error> {
-	let mut processus = Vec::<Proc>::new(); 
+
+	let mut processus = Vec::<Proc>::new();
+
 	for entry in fs::read_dir(Path::new("/proc"))? {
+
 		let entry = entry?;
 		let path = entry.path().join("exe");
+
 		if let Ok(filename) = get_basename_symlink(&path) {
+
 			if let Some(pathtmp) = entry.path().as_path().to_str() {
+
 				if let Some(index) = pathtmp.to_string().rfind('/') {
+
 					let pid: Result<i32,_> = pathtmp[index+1..].parse();
+
 					match pid {
 						Ok(pid_ok) => {
 							let vec_s = vec![filename];
@@ -50,6 +58,7 @@ pub struct LevensteinProc {
 }
 
 pub fn obtain_levensthein_distance(progname: &str, liste_procs: Vec<Proc>) -> Vec<LevensteinProc> {
+	
 	let mut leven_vec_of_proc = Vec::<LevensteinProc>::new();
 
 	for processus in liste_procs {
