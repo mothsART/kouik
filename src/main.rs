@@ -1,3 +1,5 @@
+#[macro_use]
+extern crate clap;
 extern crate serde;
 #[macro_use]
 extern crate diesel;
@@ -7,38 +9,20 @@ use std::env;
 use std::process::{Command, exit};
 use std::io::stdin;
 
-use clap::{App, Arg};
 use crate::diesel::Connection;
 use diesel::sqlite::SqliteConnection;
 use dotenv::dotenv;
 
-/*
-use diesel::prelude::*;
-use crate::models::Program;
-*/
-
 pub mod schema;
 pub mod models;
 
-
-
-const VERSION: &'static str = "0.1.0";
-const APP_NAME: &'static str = "Kouik";
+mod cli;
 
 fn establish_connection() -> SqliteConnection {
     dotenv().ok();
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     SqliteConnection::establish(&database_url)
         .expect(&format!("Error connecting to {}", database_url))
-}
-
-fn build_cli() -> App<'static, 'static> {
-    App::new(APP_NAME)
-    .bin_name("kouik")
-    .version(VERSION)
-    .author("Ferry Jérémie ferryjeremie@free.fr")
-    .about("kill program")
-    .arg(Arg::with_name("program").required(false).index(1))
 }
 
 fn prompt(title: &str, kill_list: &Vec<String>) {
@@ -80,7 +64,7 @@ fn prompt(title: &str, kill_list: &Vec<String>) {
                         Err(_e) => {
                             eprintln!(
                                 "{} did'nt succeed in killing {}",
-                                APP_NAME, concat_list
+                                crate_name!(), concat_list
                             );
                         }
                     }
@@ -99,7 +83,7 @@ fn prompt(title: &str, kill_list: &Vec<String>) {
                                 Err(_e) => {
                                     eprintln!(
                                         "{} did'nt succeed in killing {}",
-                                        APP_NAME, program
+                                        crate_name!(), program
                                     );
                                 }
                             }
@@ -126,9 +110,9 @@ fn prompt(title: &str, kill_list: &Vec<String>) {
 fn main() {
     use self::schema::programs::dsl::*;
 
-    let matches = build_cli().get_matches();
+    let matches = cli::build_cli(crate_name!(), crate_version!()).get_matches();
     if let Some(program) = matches.value_of("program") {
-        let connection = establish_connection();
+        establish_connection();
 
         let _locale = env::var("LANG").unwrap();
         let lang = _locale.get(0..5);
@@ -138,7 +122,7 @@ fn main() {
             lang.unwrap(),
             program
         );
-        println!("{}", select);
+        // println!("{}", select);
         let command = Command::new("sqlite3")
                             .arg("karcher.db")
                             .arg(".load ./spellfix")
@@ -160,7 +144,7 @@ fn main() {
             Err(_e) => {
                 eprintln!(
                     "Nothing was found matching \"{}\". {} can't kill processes.",
-                    program, APP_NAME
+                    program, crate_name!()
                 );
                 exit(1);
             },
@@ -170,7 +154,7 @@ fn main() {
                 if results.len() == 0 {
                     eprintln!(
                         "Nothing was found matching \"{}\". {} can't kill processes.",
-                        program, APP_NAME
+                        program, crate_name!()
                     );
                     exit(1);
                 }
@@ -178,7 +162,7 @@ fn main() {
                     Err(_e) => {
                         eprintln!(
                             "Nothing was found matching \"{}\". {} can't kill processes.",
-                            program, APP_NAME
+                            program, crate_name!()
                         );
                         exit(1);
                     },
@@ -201,7 +185,7 @@ fn main() {
                         if kill_list.len() == 0 {
                             eprintln!(
                                 "Nothing was found matching \"{}\". {} can't kill processes.",
-                                program, APP_NAME
+                                program, crate_name!()
                             );
                             exit(1);
                         }

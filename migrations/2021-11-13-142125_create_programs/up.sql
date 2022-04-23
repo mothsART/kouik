@@ -14,3 +14,7 @@ INSERT INTO programs VALUES(0, 'browser', 'firefox');
 INSERT INTO programs VALUES(1, 'browser', 'chromium');
 INSERT INTO programs VALUES(2, 'browser', 'chrome');
 INSERT INTO programs VALUES(3, 'browser', 'brave');
+
+INSERT INTO programs VALUES(4, 'pdf', 'evince');
+INSERT INTO programs VALUES(5, 'pdf', 'qpdf');
+INSERT INTO programs VALUES(6, 'pdf', 'mupdf');
