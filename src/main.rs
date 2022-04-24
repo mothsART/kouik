@@ -22,7 +22,7 @@ fn establish_connection() -> SqliteConnection {
     dotenv().ok();
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     SqliteConnection::establish(&database_url)
-        .expect(&format!("Error connecting to {}", database_url))
+        .unwrap_or_else(|_| panic!("Error connecting to {}", database_url))
 }
 
 fn prompt(title: &str, kill_list: &Vec<String>) {
@@ -108,8 +108,6 @@ fn prompt(title: &str, kill_list: &Vec<String>) {
 }
 
 fn main() {
-    use self::schema::programs::dsl::*;
-
     let matches = cli::build_cli(crate_name!(), crate_version!()).get_matches();
     if let Some(program) = matches.value_of("program") {
         establish_connection();
@@ -122,7 +120,6 @@ fn main() {
             lang.unwrap(),
             program
         );
-        // println!("{}", select);
         let command = Command::new("sqlite3")
                             .arg("karcher.db")
                             .arg(".load ./spellfix")
@@ -150,8 +147,7 @@ fn main() {
             },
             Ok(stdout) => {
                 let results: Vec<&str> = stdout.lines().collect();
-                println!("{:?}", results);
-                if results.len() == 0 {
+                if results.is_empty() {
                     eprintln!(
                         "Nothing was found matching \"{}\". {} can't kill processes.",
                         program, crate_name!()
@@ -182,7 +178,7 @@ fn main() {
                             }
                         }
 
-                        if kill_list.len() == 0 {
+                        if kill_list.is_empty() {
                             eprintln!(
                                 "Nothing was found matching \"{}\". {} can't kill processes.",
                                 program, crate_name!()
