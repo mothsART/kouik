@@ -6,15 +6,15 @@ extern crate diesel;
 extern crate procfs;
 
 use std::env;
-use std::process::{Command, exit};
 use std::io::stdin;
+use std::process::{exit, Command};
 
 use crate::diesel::Connection;
 use diesel::sqlite::SqliteConnection;
 use dotenv::dotenv;
 
-pub mod schema;
 pub mod models;
+pub mod schema;
 
 mod cli;
 
@@ -38,72 +38,47 @@ fn prompt(title: &str, kill_list: &Vec<String>) {
     let mut input = String::new();
     let read_input = stdin().read_line(&mut input);
     match read_input {
-        Err(_e) => {
-            prompt("Wrong input \"a\". Retry :", kill_list)
-        },
-        Ok(_r) => {
-            match input.trim() {
-                "q" => {
-                    exit(1);
-                },
-                "a" => {
-                    if kill_list.len() == 1 {
-                        prompt("Wrong input \"a\". Retry :", kill_list)
+        Err(_e) => prompt("Wrong input \"a\". Retry :", kill_list),
+        Ok(_r) => match input.trim() {
+            "q" => {
+                exit(1);
+            }
+            "a" => {
+                if kill_list.len() == 1 {
+                    prompt("Wrong input \"a\". Retry :", kill_list)
+                }
+                let concat_list = kill_list.join(" ");
+                let killall_cmd = Command::new("killall").args(kill_list).output();
+                match killall_cmd {
+                    Ok(_v) => {
+                        println!("\"{}\" has been killed", concat_list);
                     }
-                    let concat_list = kill_list.join(" ");
-                    let killall_cmd = Command::new("killall")
-                                              .args(kill_list)
-                                              .output();
-                    match killall_cmd {
-                        Ok(_v) => {
-                            println!(
-                                "\"{}\" has been killed",
-                                concat_list
-                            );
-                        },
-                        Err(_e) => {
-                            eprintln!(
-                                "{} did'nt succeed in killing {}",
-                                crate_name!(), concat_list
-                            );
-                        }
-                    }
-                },
-                input => {
-                    match input.parse::<usize>() {
-                        Ok(value) if value > 0 && value <= kill_list.len() => {
-                            let program = kill_list.get(value - 1).unwrap();
-                            let killall_cmd = Command::new("killall")
-                                                      .arg(program)
-                                                      .output();
-                            match killall_cmd {
-                                Ok(_v) => {
-                                    println!("\"{}\" has been killed", program);
-                                },
-                                Err(_e) => {
-                                    eprintln!(
-                                        "{} did'nt succeed in killing {}",
-                                        crate_name!(), program
-                                    );
-                                }
-                            }
-                        }
-                        Ok(input) => {
-                            prompt(
-                                &format!("Wrong input \"{}\". Retry :", input),
-                                kill_list
-                            )
-                        },
-                        Err(_e) => {
-                            prompt(
-                                &format!("Wrong input \"{}\". Retry :", input),
-                                kill_list
-                            )
-                        }
+                    Err(_e) => {
+                        eprintln!(
+                            "{} did'nt succeed in killing {}",
+                            crate_name!(),
+                            concat_list
+                        );
                     }
                 }
             }
-        }
+            input => match input.parse::<usize>() {
+                Ok(value) if value > 0 && value <= kill_list.len() => {
+                    let program = kill_list.get(value - 1).unwrap();
+                    let killall_cmd = Command::new("killall").arg(program).output();
+                    match killall_cmd {
+                        Ok(_v) => {
+                            println!("\"{}\" has been killed", program);
+                        }
+                        Err(_e) => {
+                            eprintln!("{} did'nt succeed in killing {}", crate_name!(), program);
+                        }
+                    }
+                }
+                Ok(input) => prompt(&format!("Wrong input \"{}\". Retry :", input), kill_list),
+                Err(_e) => prompt(&format!("Wrong input \"{}\". Retry :", input), kill_list),
+            },
+        },
     }
 }
 
@@ -121,12 +96,12 @@ fn main() {
             program
         );
         let command = Command::new("sqlite3")
-                            .arg("karcher.db")
-                            .arg(".load ./spellfix")
-                            .arg(select)
-                            .output()
-                            .unwrap()
-                            .stdout;
+            .arg("karcher.db")
+            .arg(".load ./spellfix")
+            .arg(select)
+            .output()
+            .unwrap()
+            .stdout;
         let stdout = String::from_utf8(command);
         /*
          * Diesel doesn't support SQlite extension :
@@ -141,16 +116,18 @@ fn main() {
             Err(_e) => {
                 eprintln!(
                     "Nothing was found matching \"{}\". {} can't kill processes.",
-                    program, crate_name!()
+                    program,
+                    crate_name!()
                 );
                 exit(1);
-            },
+            }
             Ok(stdout) => {
                 let results: Vec<&str> = stdout.lines().collect();
                 if results.is_empty() {
                     eprintln!(
                         "Nothing was found matching \"{}\". {} can't kill processes.",
-                        program, crate_name!()
+                        program,
+                        crate_name!()
                     );
                     exit(1);
                 }
@@ -158,12 +135,13 @@ fn main() {
                     Err(_e) => {
                         eprintln!(
                             "Nothing was found matching \"{}\". {} can't kill processes.",
-                            program, crate_name!()
+                            program,
+                            crate_name!()
                         );
                         exit(1);
-                    },
+                    }
                     Ok(processes) => {
-                        let mut kill_list =  Vec::new();
+                        let mut kill_list = Vec::new();
                         for p in results {
                             for prc in &processes {
                                 if kill_list.contains(&prc.stat.comm) {
@@ -181,7 +159,8 @@ fn main() {
                         if kill_list.is_empty() {
                             eprintln!(
                                 "Nothing was found matching \"{}\". {} can't kill processes.",
-                                program, crate_name!()
+                                program,
+                                crate_name!()
                             );
                             exit(1);
                         }
